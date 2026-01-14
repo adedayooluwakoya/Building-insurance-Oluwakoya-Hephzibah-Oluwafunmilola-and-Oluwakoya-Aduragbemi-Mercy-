@@ -1,0 +1,1433 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyPo9UHv4v8qJ+JikKEa6wJe",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/adedayooluwakoya/Building-insurance-Oluwakoya-Hephzibah-Oluwafunmilola-and-Oluwakoya-Aduragbemi-Mercy-/blob/main/Building_Insurance_claim_prediction\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "TxAGMVKV6ScN"
+      },
+      "outputs": [],
+      "source": [
+        "from google.colab import drive\n",
+        "drive.mount('/content/drive')"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "**Read dataset**\n",
+        "\n",
+        "Reading the dataset is a crucial part in building a useful model, because reading helps to understand the data structure, identify issues early (I.e, outliers, missing values e.t.c), decide preprocessing steps which avoids errors in modeling"
+      ],
+      "metadata": {
+        "id": "6MPvjkeFl0jV"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Import necessary libraries\n",
+        "import pandas as pd\n",
+        "import numpy as np\n",
+        "\n",
+        "# Load dataset\n",
+        "\n",
+        "df = pd.read_csv('/content/drive/MyDrive/Building_Insurance.csv')\n",
+        "\n",
+        "# View last five rows to inspect dataset\n",
+        "\n",
+        "df.tail()"
+      ],
+      "metadata": {
+        "id": "oDMum40g60-W"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# View first five rows\n",
+        "\n",
+        "df.head()"
+      ],
+      "metadata": {
+        "id": "q-57t8r97T4C"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# To provide concised summary of the dataframe\n",
+        "\n",
+        "df.info()"
+      ],
+      "metadata": {
+        "id": "OO653jZS7Um-"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# To view the columns names\n",
+        "\n",
+        "df.columns"
+      ],
+      "metadata": {
+        "id": "-ci1xfHc7VKx"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# gives a summary of Numeric columns\n",
+        "df.describe()"
+      ],
+      "metadata": {
+        "id": "hLraol3I7VwH"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "\n",
+        "# To check the data type of each column\n",
+        "\n",
+        "df.dtypes"
+      ],
+      "metadata": {
+        "id": "SI_X8xwY7YET"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# sum of null values\n",
+        "df.isnull().sum()"
+      ],
+      "metadata": {
+        "id": "mBtn2mlF7WUM"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Encode relevant columns before dropping columns with objects for Standardization"
+      ],
+      "metadata": {
+        "id": "gyyJEOHATHXT"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from sklearn.preprocessing import LabelEncoder\n",
+        "\n",
+        "# Encode the 'Building_Painted' column\n",
+        "le = LabelEncoder()\n",
+        "df['Building_Painted_encoded'] = le.fit_transform(df['Building_Painted'])"
+      ],
+      "metadata": {
+        "id": "ODXTf9VOO8io"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Encode the 'Building_Fenced' column\n",
+        "le = LabelEncoder()\n",
+        "df['Building_Fenced_encoded'] = le.fit_transform(df['Building_Fenced'])"
+      ],
+      "metadata": {
+        "id": "cM-IHwBKQWXc"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Encode the 'Garden' column\n",
+        "le = LabelEncoder()\n",
+        "df['Garden_encoded'] = le.fit_transform(df['Garden'])"
+      ],
+      "metadata": {
+        "id": "8k41LU8RQXAN"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Encode the 'Settlement' column\n",
+        "le = LabelEncoder()\n",
+        "df['Settlement_encoded'] = le.fit_transform(df['Settlement'])"
+      ],
+      "metadata": {
+        "id": "_KPKsq6uQXQO"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Replace empty rows with nan"
+      ],
+      "metadata": {
+        "id": "wBAww5J2WaI1"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "df['Geo_Code'] = df['Geo_Code'].replace(\"\", np.nan)"
+      ],
+      "metadata": {
+        "id": "aOAoh-26UtIa"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "df['Date_of_Occupancy'] = df['Date_of_Occupancy'].replace(\"\", np.nan)"
+      ],
+      "metadata": {
+        "id": "bWW1QH_DU8ui"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "df['Building Dimension'] = df['Building Dimension'].replace(\"\", np.nan)"
+      ],
+      "metadata": {
+        "id": "ajqC97mHVAAl"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "df['Garden'] = df['Garden'].replace(\"\", np.nan)"
+      ],
+      "metadata": {
+        "id": "rZmvgd-jVzxm"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Fill values Nan with the median in the column\n",
+        "# Get medians only for numeric columns\n",
+        "numeric_medians = df.select_dtypes(include=np.number).median()\n",
+        "# Fill NaN values only in numeric columns using their medians\n",
+        "df.fillna(numeric_medians, inplace=True)"
+      ],
+      "metadata": {
+        "id": "fBawmKh47XlL"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "**Standardizing columns before modeling because**:\n",
+        "\n",
+        "Features have different scales(e.g, when a model is fed with raw values, big numbers dominate small numbers)\n",
+        "\n",
+        "Helps regularization (standardization ensures the penalty is applied to all features)\n",
+        "\n",
+        "Improves interpretability (coefficients of standardized features tell you relative importance), bigger coefficients (in absolute value) indicate a feature has a stronger impact on the target, making the model more interpretable"
+      ],
+      "metadata": {
+        "id": "Kb2s729DnYvC"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from sklearn.preprocessing import StandardScaler\n",
+        "import numpy as np\n",
+        "\n",
+        "# Separate features and target\n",
+        "# Drop original categorical columns and identifier columns that are not numerical\n",
+        "# The encoded versions of 'Building_Painted', 'Building_Fenced', 'Garden', 'Settlement' are already in df\n",
+        "X = df.drop([\n",
+        "    'Insured_Period', 'Customer Id', 'Building_Painted', 'Building_Fenced',\n",
+        "    'Garden', 'Settlement', 'NumberOfWindows', 'Geo_Code', 'Claim'\n",
+        "], axis=1, errors='ignore') # Added errors='ignore' for robustness\n",
+        "y = df['Claim']\n",
+        "\n",
+        "# Standardize columns\n",
+        "scaler = StandardScaler()\n",
+        "X_scaled = scaler.fit_transform(X)"
+      ],
+      "metadata": {
+        "id": "14G-RXayMetJ"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "**Data processing**\n",
+        "\n",
+        "Preprocessing data before modeling"
+      ],
+      "metadata": {
+        "id": "Rqx50JYjqwSq"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# To view top features\n",
+        "import matplotlib.pyplot as plt\n",
+        "from sklearn.ensemble import RandomForestClassifier\n",
+        "\n",
+        "rf = RandomForestClassifier()\n",
+        "rf.fit(X_scaled, y)\n",
+        "\n",
+        "importances = rf.feature_importances_\n",
+        "features = pd.Series(importances, index=X.columns)\n",
+        "features.sort_values(ascending=False).plot(kind='bar', title=\"RandomForestClassifier\")\n",
+        "plt.show()\n",
+        "\n",
+        "print(\"Top features by Random Forest:\")\n",
+        "print(features.sort_values(ascending=False))"
+      ],
+      "metadata": {
+        "id": "rOV5buex7W3Q"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# To count the occurrences for Claim and not Claim\n",
+        "print(df['Claim'].value_counts())   # This prints the total number of positive and negative classes"
+      ],
+      "metadata": {
+        "id": "GlQQZf1uSmNv"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#Count the number of occurrences for each Churn class\n",
+        "# Import pandas for data manipulation\n",
+        "# Import matplotlib.pyplot for visualization\n",
+        "\n",
+        "import pandas as pd\n",
+        "import matplotlib.pyplot as plt\n",
+        "\n",
+        "Claim_counts = df['Claim'].value_counts()\n",
+        "\n",
+        "#Plot a bar chart\n",
+        "plt.figure(figsize=(6,4))  # This determines the size of the plot\n",
+        "Claim_counts.plot(kind='bar', color=['magenta', 'green'], edgecolor='red')  # This gives the necessary details needed for the plot\n",
+        "plt.title ('Claim positive class vs Claim negative class')  # This names the plot\n",
+        "plt.xlabel ('Claim (0 = Claim negative, 1 = Claim positive)')  # This is a clarification that 0 means Churn negative, while 1 means Churn positive\n",
+        "plt.ylabel ('count')\n",
+        "plt.xticks(rotation=0)\n",
+        "plt.grid(axis = 'y', linestyle='--' , alpha = 0.7)\n",
+        "plt.tight_layout()\n",
+        "plt.show()"
+      ],
+      "metadata": {
+        "id": "Oyi2XfcmSmej"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#Define the list of features to analyze\n",
+        "import seaborn as sns\n",
+        "\n",
+        "# Updated features_to_plot with only numerical columns, including encoded ones\n",
+        "# Using the log-transformed versions of the dropped columns\n",
+        "features_to_plot = ['Residential', 'YearOfObservation', 'Insured_Period_log', 'Building Dimension_log', 'Building_Type', 'Date_of_Occupancy_log',\n",
+        "                    'Building_Painted_encoded', 'Building_Fenced_encoded', 'Garden_encoded', 'Settlement_encoded']\n",
+        "\n",
+        "# Plot a boxplot for outliers detection\n",
+        "\n",
+        "plt.figure(figsize = (10, 6))  # This determines the size of the plot\n",
+        "sns.boxplot (data=df[features_to_plot])\n",
+        "plt.title ('Boxplot of features')\n",
+        "plt.xticks(rotation=45)\n",
+        "plt.show()"
+      ],
+      "metadata": {
+        "id": "D4V_Z5CoSmsY"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Log transform skewed numerical column then remove original version\n",
+        "skewed_cols = ['Building Dimension', 'Date_of_Occupancy']\n",
+        "\n",
+        "# Create log-transformed columns only for existing skewed columns\n",
+        "for col in skewed_cols:\n",
+        "    if col in df.columns:\n",
+        "        df[col + '_log'] = np.log1p(df[col])\n",
+        "\n",
+        "# Drop original skewed columns, ignoring errors if a column is already absent\n",
+        "df.drop(columns=skewed_cols, inplace=True, errors='ignore')"
+      ],
+      "metadata": {
+        "id": "Wlb-C9oaOVAp"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Using train quantile to clip test values\n",
+        "\n",
+        "# Updated list to use the log-transformed column names available in X\n",
+        "cols_to_clip = ['Building Dimension_log', 'Date_of_Occupancy_log', 'Insured_Period_log']\n",
+        "\n",
+        "# Get the column names from the X DataFrame (before scaling/splitting)\n",
+        "# This is needed to map column names to indices for the X_train and X_test NumPy arrays.\n",
+        "# The 'X' in the kernel state is the DataFrame used for feature extraction.\n",
+        "original_feature_names = X.columns.tolist()\n",
+        "\n",
+        "for col_name in cols_to_clip:\n",
+        "    # Ensure the column exists in the original feature names list to get its index\n",
+        "    if col_name in original_feature_names:\n",
+        "        col_idx = original_feature_names.index(col_name)\n",
+        "\n",
+        "        # Extract the column data from the NumPy array X_train for quantile calculation\n",
+        "        X_train_col_data = X_train[:, col_idx]\n",
+        "\n",
+        "        # Calculate quantiles from the NumPy array column data using np.percentile\n",
+        "        lower = np.percentile(X_train_col_data, 1)\n",
+        "        upper = np.percentile(X_train_col_data, 99)\n",
+        "\n",
+        "        # Clip X_train (NumPy array)\n",
+        "        X_train[:, col_idx] = np.clip(X_train_col_data, lower, upper)\n",
+        "\n",
+        "        # Clip X_test (NumPy array)\n",
+        "        X_test[:, col_idx] = np.clip(X_test[:, col_idx], lower, upper)\n",
+        "    else:\n",
+        "        print(f\"Warning: Column '{col_name}' not found in original feature list ({original_feature_names}). Skipping clipping for this column.\")"
+      ],
+      "metadata": {
+        "id": "QOaFvpklRh8c"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Plot an heatmap to show correlation\n",
+        "# Import seaborn for statistical data visualization\n",
+        "\n",
+        "import seaborn as sns\n",
+        "import matplotlib.pyplot as plt\n",
+        "plt.figure(figsize=(10,8))\n",
+        "sns.heatmap(df.select_dtypes(include=np.number).corr(), annot=True, cmap='cividis', fmt=\".2f\")\n",
+        "plt.title('Correlation Heatmap')\n",
+        "plt.show()"
+      ],
+      "metadata": {
+        "id": "gkcMoDUhSm6h"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Import necessary models for feature selection\n",
+        "\n",
+        "from sklearn.linear_model import LogisticRegression\n",
+        "from sklearn.metrics import classification_report, confusion_matrix, accuracy_score"
+      ],
+      "metadata": {
+        "id": "9PrjaIpw7Yi-"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "20cb25a6"
+      },
+      "source": [
+        "import pandas as pd\n",
+        "import numpy as np\n",
+        "from sklearn.preprocessing import StandardScaler\n",
+        "from sklearn.model_selection import train_test_split\n",
+        "from imblearn.over_sampling import SMOTE\n",
+        "\n",
+        "# Ensure 'Insured_Period' is log-transformed if not already done, and drop original\n",
+        "if 'Insured_Period' in df.columns:\n",
+        "    df['Insured_Period_log'] = np.log1p(df['Insured_Period'])\n",
+        "    df.drop(columns=['Insured_Period'], inplace=True, errors='ignore')\n",
+        "\n",
+        "# Define the features (X) and target (y) from the current df\n",
+        "# Drop identifier, original categorical columns, and the target variable 'Claim' from X\n",
+        "X = df.drop(columns=[\n",
+        "    'Customer Id', 'Building_Painted', 'Building_Fenced', 'Garden',\n",
+        "    'Settlement', 'NumberOfWindows', 'Geo_Code', 'Claim'\n",
+        "], errors='ignore')\n",
+        "y = df['Claim']\n",
+        "\n",
+        "# Split data into train and test size\n",
+        "X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, random_state=42)\n",
+        "\n",
+        "# Standardize columns\n",
+        "scaler = StandardScaler()\n",
+        "scaler.fit(X_train) # Fit scaler only on training data\n",
+        "X_train = scaler.transform(X_train)\n",
+        "X_test = scaler.transform(X_test)\n",
+        "\n",
+        "# Application of SMOTE to balance the training data\n",
+        "X_train_res, y_train_res = SMOTE(random_state=42).fit_resample(X_train, y_train)\n",
+        "\n",
+        "# Print test and shape size to confirm the size\n",
+        "print(\"Training set shape (before SMOTE):\", X_train.shape)\n",
+        "print(\"Testing set shape:\", X_test.shape)\n",
+        "print(\"Training set shape (after SMOTE):\", X_train_res.shape)\n",
+        "print(\"Training target shape (after SMOTE):\", y_train_res.shape)\n",
+        "print(\"Testing target shape:\", y_test.shape)"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "**Why I used SMOTE?**\n",
+        "\n",
+        "SMOTE creates synthetic examples ofthe minority class instead of just duplicating existing ones.\n",
+        "\n",
+        "It does this by:\n",
+        "Picking a minority class sample, finding its k nearest neighbors in the minority class.\n",
+        "Randomly choosing one neighbor and creating a new synthetic point along the line segment connecting them.\n",
+        "\n",
+        "This adds new, plausible data points for the minority class (Building has at least one insurance claim over insured period)"
+      ],
+      "metadata": {
+        "id": "NcXTPN0znnmN"
+      }
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Cross validation to improve data balancing"
+      ],
+      "metadata": {
+        "id": "ocRUTqaZL1a-"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Import StratifiedKFold for cross validation\n",
+        "from sklearn.model_selection import StratifiedKFold\n",
+        "\n",
+        "# Split dataset into fold for cross validation to prevent overfitting and misleading accuracy due to class imbalance\n",
+        "skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)\n",
+        "\n",
+        "for train_idx, val_idx in skf.split(X, y):\n",
+        "    X_train, X_val = X.iloc[train_idx], X.iloc[val_idx]\n",
+        "    y_train, y_val = y.iloc[train_idx], y.iloc[val_idx]"
+      ],
+      "metadata": {
+        "id": "vG82SYB37ZxY"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Experimenting on different models to see which would work best"
+      ],
+      "metadata": {
+        "id": "zPJ-459IsFFB"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Import evaluation tools\n",
+        "\n",
+        "from sklearn.metrics import (\n",
+        "    classification_report,\n",
+        "    confusion_matrix,\n",
+        "    roc_auc_score,\n",
+        "    roc_curve\n",
+        ")"
+      ],
+      "metadata": {
+        "id": "nLUbetfibczu"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "c8e6949b"
+      },
+      "source": [
+        "from sklearn.linear_model import LogisticRegression\n",
+        "from sklearn.metrics import classification_report, roc_auc_score\n",
+        "\n",
+        "# Instantiate Logistic Regression model with class_weight='balanced'\n",
+        "log_model = LogisticRegression(\n",
+        "    max_iter=1000,\n",
+        "    class_weight='balanced',\n",
+        "    random_state=42\n",
+        ")\n",
+        "\n",
+        "# Fit Logistic Regression model on resampled training data\n",
+        "log_model.fit(X_train_res, y_train_res)\n",
+        "\n",
+        "# Predict probability of positive class on the test set\n",
+        "y_prob_log = log_model.predict_proba(X_test)[:, 1]\n",
+        "\n",
+        "# Predict class label on test set using a default threshold of 0.5 for evaluation\n",
+        "y_pred_log = (y_prob_log > 0.5).astype(int)\n",
+        "\n",
+        "# Evaluate the trained LogisticRegression model\n",
+        "print(\"Logistic Regression (Re-trained)\")\n",
+        "print(classification_report(y_test, y_pred_log))\n",
+        "\n",
+        "# Calculate ROC-AUC score\n",
+        "roc_auc_log = roc_auc_score(y_test, y_prob_log)\n",
+        "print(\"ROC-AUC:\", roc_auc_log)"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# confusion matrix for Logistic Regression model\n",
+        "y_pred_log = log_model.predict(X_test)\n",
+        "cm_log = confusion_matrix(y_test, y_pred_log)\n",
+        "\n",
+        "plt.figure(figsize=(4,3))\n",
+        "sns.heatmap(cm_log, annot=True, fmt='d', cmap='Blues')\n",
+        "plt.title('Logistic Regression Confusion Matrix')\n",
+        "plt.ylabel('Actual')\n",
+        "plt.xlabel('Predicted')\n",
+        "plt.show()"
+      ],
+      "metadata": {
+        "id": "QllPNUhrwByO"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from sklearn.metrics import roc_curve, roc_auc_score\n",
+        "import matplotlib.pyplot as plt\n",
+        "\n",
+        "y_pred_proba_lr = log_model.predict_proba(X_test)[:, 1]"
+      ],
+      "metadata": {
+        "id": "t3jsPFDyJhat"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "fpr_lr, tpr_lr, _ = roc_curve(y_test, y_pred_proba_lr)\n",
+        "roc_auc_lr = roc_auc_score(y_test, y_pred_proba_lr)"
+      ],
+      "metadata": {
+        "id": "Nql3CM9TJj0u"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "plt.figure()\n",
+        "plt.plot(fpr_lr, tpr_lr, label=f\"Logistic Regression (AUC = {roc_auc_lr:.3f})\")\n",
+        "plt.plot([0, 1], [0, 1], linestyle='--')\n",
+        "plt.xlabel(\"False Positive Rate\")\n",
+        "plt.ylabel(\"True Positive Rate\")\n",
+        "plt.title(\"ROC Curve – Logistic Regression\")\n",
+        "plt.legend()\n",
+        "plt.show()"
+      ],
+      "metadata": {
+        "id": "T3zz8gWOJuCU"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "I'll be using a tree based model for more experimenting"
+      ],
+      "metadata": {
+        "id": "_XPLSQDPrXHe"
+      }
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "50d86a54"
+      },
+      "source": [
+        "from sklearn.ensemble import RandomForestClassifier\n",
+        "from sklearn.metrics import classification_report, roc_auc_score\n",
+        "\n",
+        "# Training RandomForestClassifier model on the trained data\n",
+        "rf_model = RandomForestClassifier(\n",
+        "    n_estimators=300,\n",
+        "    max_depth=10,\n",
+        "    class_weight='balanced',\n",
+        "    random_state=42\n",
+        ")\n",
+        "\n",
+        "rf_model.fit(X_train_res, y_train_res)\n",
+        "\n",
+        "y_pred_rf = rf_model.predict(X_test)\n",
+        "y_prob_rf = rf_model.predict_proba(X_test)[:, 1]\n",
+        "\n",
+        "print(\"Random Forest (Re-trained)\")\n",
+        "print(classification_report(y_test, y_pred_rf))\n",
+        "\n",
+        "roc_auc_rf = roc_auc_score(y_test, y_prob_rf)\n",
+        "print(\"ROC-AUC:\", roc_auc_rf)"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import matplotlib.pyplot as plt\n",
+        "from sklearn.metrics import ConfusionMatrixDisplay\n",
+        "\n",
+        "ConfusionMatrixDisplay.from_predictions(\n",
+        "    y_test, y_pred_rf\n",
+        ")\n",
+        "plt.title(\"Random Forest Confusion Matrix\")\n",
+        "plt.show()"
+      ],
+      "metadata": {
+        "id": "l8SRK0jNtpYt"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# To check class imbalance\n",
+        "y_train.value_counts()"
+      ],
+      "metadata": {
+        "id": "c5qDs7ay7fUN"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "This shows that the dataset is really imbalance\n",
+        "\n",
+        "Meaning the model is:\n",
+        "Bias toward the majority class\n",
+        "\n",
+        "Would experience poor performance on minority class(1)\n",
+        "\n",
+        "Misleading in accuracy"
+      ],
+      "metadata": {
+        "id": "Amc4p_bDtgqJ"
+      }
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "**Data Imbalance**\n",
+        "\n",
+        "The target variable is moderately imbalanced, with approximately 77% non-claim vs ~23% claim.  \n",
+        "This reflects real-world conditions and requires careful handling to ensure the model properly predicts the minority class. Accounting for this imbalance is crucial for improving metrics like ROC-AUC, recall, and F1-score."
+      ],
+      "metadata": {
+        "id": "sWCzFdVyvwWO"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#Count the number of occurrences for each Churn class\n",
+        "# Import pandas for data manipulation\n",
+        "# Import matplotlib.pyplot for visualization\n",
+        "\n",
+        "import pandas as pd\n",
+        "import matplotlib.pyplot as plt\n",
+        "\n",
+        "Claim_counts = df['Claim'].value_counts()\n",
+        "\n",
+        "#Plot a bar chart\n",
+        "plt.figure(figsize=(6,4))  # This determines the size of the plot\n",
+        "Claim_counts.plot(kind='bar', color=['red', 'green'], edgecolor='red')  # This gives the necessary details needed for the plot\n",
+        "plt.title ('Claim positive class vs Claim negative class')  # This names the plot\n",
+        "plt.xlabel ('Claim (0 = Claim negative, 1 = Claim positive)')  # This is a clarification that 0 means Churn negative, while 1 means Churn positive\n",
+        "plt.ylabel ('count')\n",
+        "plt.xticks(rotation=0)\n",
+        "plt.grid(axis = 'y', linestyle='--' , alpha = 0.7)\n",
+        "plt.tight_layout()\n",
+        "plt.show()"
+      ],
+      "metadata": {
+        "id": "Hhmn43hYwDYA"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        " I'll try another tree based model to see if i can get a better performing model"
+      ],
+      "metadata": {
+        "id": "Uq50mnUBboDP"
+      }
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "721c9fb5"
+      },
+      "source": [
+        "from sklearn.ensemble import GradientBoostingClassifier\n",
+        "from sklearn.metrics import classification_report, roc_auc_score\n",
+        "\n",
+        "gb_model = GradientBoostingClassifier(random_state=42)\n",
+        "\n",
+        "gb_model.fit(X_train_res, y_train_res)\n",
+        "\n",
+        "y_pred_gb = gb_model.predict(X_test)\n",
+        "y_prob_gb = gb_model.predict_proba(X_test)[:, 1]\n",
+        "\n",
+        "print(\"Gradient Boosting (Re-trained)\")\n",
+        "print(classification_report(y_test, y_pred_gb))\n",
+        "\n",
+        "roc_auc_gb = roc_auc_score(y_test, y_prob_gb)\n",
+        "print(\"ROC-AUC:\", roc_auc_gb)"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "\n",
+        "# To plot a confusion matrix for Gradient Boosting\n",
+        "\n",
+        "y_pred_gb = gb_model.predict(X_test)\n",
+        "cm_gb = confusion_matrix(y_test, y_pred_gb)\n",
+        "\n",
+        "plt.figure(figsize=(4,3))\n",
+        "sns.heatmap(cm_gb, annot=True, fmt='d', cmap='Reds')\n",
+        "plt.title('Gradient Boosting Confusion Matrix')\n",
+        "plt.ylabel('Actual')\n",
+        "plt.xlabel('Predicted')\n",
+        "plt.show()"
+      ],
+      "metadata": {
+        "id": "FEFyLEfWxcKx"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "I'll try another robust model"
+      ],
+      "metadata": {
+        "id": "7HD3AhwItPvE"
+      }
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "2526e4ee"
+      },
+      "source": [
+        "from xgboost import XGBClassifier\n",
+        "from sklearn.metrics import classification_report, roc_auc_score\n",
+        "\n",
+        "# Calculate scale_pos_weight for XGBoost\n",
+        "# Recalculate ratio from the (now balanced) resampled training data\n",
+        "ratio = y_train_res.value_counts()[0] / y_train_res.value_counts()[1]\n",
+        "\n",
+        "xgb_model = XGBClassifier(\n",
+        "    n_estimators=300,\n",
+        "    learning_rate=0.05,\n",
+        "    max_depth=6,\n",
+        "    scale_pos_weight=ratio, # Use the calculated ratio from resampled data\n",
+        "    eval_metric='logloss',\n",
+        "    random_state=42\n",
+        ")\n",
+        "\n",
+        "xgb_model.fit(X_train_res, y_train_res)\n",
+        "\n",
+        "y_pred_xgb = xgb_model.predict(X_test)\n",
+        "y_prob_xgb = xgb_model.predict_proba(X_test)[:, 1]\n",
+        "\n",
+        "print(\"XGBoost (Re-trained)\")\n",
+        "print(classification_report(y_test, y_pred_xgb))\n",
+        "\n",
+        "roc_auc_xgb = roc_auc_score(y_test, y_prob_xgb)\n",
+        "print(\"ROC-AUC:\", roc_auc_xgb)"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "I would manually hyperparameter tune the xgboost model, to give it higher performance"
+      ],
+      "metadata": {
+        "id": "wsGHKTF9wjIb"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Hyperparameter tuning XGBoost\n",
+        "\n",
+        "from xgboost import XGBClassifier\n",
+        "from sklearn.model_selection import RandomizedSearchCV\n",
+        "from sklearn.metrics import roc_auc_score, make_scorer\n",
+        "\n",
+        "# Set scale_pos_weight for class imbalance\n",
+        "scale_pos_weight = len(y_train[y_train==0]) / len(y_train[y_train==1])\n",
+        "\n",
+        "xgb = XGBClassifier(\n",
+        "    objective='binary:logistic',\n",
+        "    eval_metric='auc',\n",
+        "    use_label_encoder=False,\n",
+        "    scale_pos_weight=scale_pos_weight,\n",
+        "    n_jobs=-1,\n",
+        "    random_state=42\n",
+        ")\n",
+        "\n",
+        "# Hyperparameter search space\n",
+        "param_grid = {\n",
+        "    'n_estimators': [200, 400, 600],\n",
+        "    'max_depth': [3, 5, 7],\n",
+        "    'learning_rate': [0.01, 0.05, 0.1],\n",
+        "    'subsample': [0.7, 0.8, 1.0],\n",
+        "    'colsample_bytree': [0.7, 0.8, 1.0],\n",
+        "    'gamma': [0, 1, 5]\n",
+        "}\n",
+        "\n",
+        "# Use ROC AUC as scoring\n",
+        "roc_auc = make_scorer(roc_auc_score, needs_proba=True)\n",
+        "\n",
+        "search = RandomizedSearchCV(\n",
+        "    estimator=xgb,\n",
+        "    param_distributions=param_grid,\n",
+        "    n_iter=20,\n",
+        "    scoring=roc_auc,\n",
+        "    cv=3,\n",
+        "    verbose=1,\n",
+        "    random_state=42\n",
+        ")\n",
+        "\n",
+        "search.fit(X_train, y_train)"
+      ],
+      "metadata": {
+        "id": "CQZg-i2eg93A",
+        "collapsed": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "\n",
+        "# To plot confusion matrix for Xgboost model\n",
+        "y_pred_xgb = xgb_model.predict(X_test)\n",
+        "cm_xgb = confusion_matrix(y_test, y_pred_xgb)\n",
+        "\n",
+        "plt.figure(figsize=(4,3))\n",
+        "sns.heatmap(cm_xgb, annot=True, fmt='d', cmap='Greens')\n",
+        "plt.title('XGBoost Confusion Matrix')\n",
+        "plt.ylabel('Actual')\n",
+        "plt.xlabel('Predicted')\n",
+        "plt.show()"
+      ],
+      "metadata": {
+        "id": "IjjIOrWP7cEF"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "\n",
+        "# Comparison of models performance\n",
+        "import pandas as pd\n",
+        "\n",
+        "results = pd.DataFrame({\n",
+        "    'Model': ['Logistic Regression', 'Random Forest', 'Gradient Boosting', 'XGBoost'],\n",
+        "    'ROC-AUC': [roc_auc_log, roc_auc_rf, roc_auc_gb, roc_auc_xgb]\n",
+        "})\n",
+        "\n",
+        "results"
+      ],
+      "metadata": {
+        "id": "F2ewnKtPvFD7"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "**Stacking models**\n",
+        "\n",
+        "Seeing that LogisticRegression and XGBoost has second to the highest quality and most trusted models I'll stack them for better model outcome"
+      ],
+      "metadata": {
+        "id": "PykyDc4BxKuW"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from sklearn.ensemble import StackingClassifier\n",
+        "from xgboost import XGBClassifier\n",
+        "from sklearn.linear_model import LogisticRegression\n",
+        "from sklearn.model_selection import train_test_split\n",
+        "from sklearn.metrics import classification_report, roc_auc_score"
+      ],
+      "metadata": {
+        "id": "bcE59p737huN"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Handle imbalance for XGBoost\n",
+        "scale_pos_weight = len(y_train[y_train==0]) / len(y_train[y_train==1])\n",
+        "\n",
+        "# Base models\n",
+        "base_models = [\n",
+        "    ('lr', LogisticRegression(max_iter=1000, class_weight='balanced', random_state=42)),\n",
+        "    ('xgb', XGBClassifier(\n",
+        "        objective='binary:logistic',\n",
+        "        eval_metric='auc',\n",
+        "        use_label_encoder=False,\n",
+        "        scale_pos_weight=scale_pos_weight,\n",
+        "        n_jobs=-1,\n",
+        "        random_state=42\n",
+        "    ))\n",
+        "]\n",
+        "\n",
+        "# Meta-model\n",
+        "meta_model = LogisticRegression(max_iter=1000, class_weight='balanced', random_state=42)"
+      ],
+      "metadata": {
+        "id": "oIMc_ySc7iOU"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "stack_model = StackingClassifier(\n",
+        "    estimators=base_models,\n",
+        "    final_estimator=meta_model,\n",
+        "    cv=5,\n",
+        "    stack_method='predict_proba',  # use probabilities for meta-model\n",
+        "    n_jobs=-1\n",
+        ")"
+      ],
+      "metadata": {
+        "id": "KTSEqAfm7ir0"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "stack_model.fit(X_train, y_train)"
+      ],
+      "metadata": {
+        "id": "I6L4NBqW7jKE"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Predicted probabilities for positive class\n",
+        "y_prob = stack_model.predict_proba(X_test)[:, 1]\n",
+        "\n",
+        "# Automatic threshold selection using Youden's J\n",
+        "from sklearn.metrics import roc_curve\n",
+        "\n",
+        "fpr, tpr, thresholds = roc_curve(y_test, y_prob)\n",
+        "best_threshold = thresholds[(tpr - fpr).argmax()]\n",
+        "print(\"Best threshold:\", best_threshold)\n",
+        "\n",
+        "# Apply threshold\n",
+        "y_pred = (y_prob >= best_threshold).astype(int)\n",
+        "\n",
+        "# Evaluate\n",
+        "print(classification_report(y_test, y_pred))\n",
+        "print(\"ROC AUC:\", roc_auc_score(y_test, y_prob))"
+      ],
+      "metadata": {
+        "id": "pmdV9I9i7jys"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Compute ROC curve points\n",
+        "fpr, tpr, thresholds = roc_curve(y_test, y_prob)\n",
+        "\n",
+        "# Plot\n",
+        "plt.figure(figsize=(6, 6))\n",
+        "plt.plot(fpr, tpr, label=f'Stack Model (AUC = {roc_auc:.3f})', color='blue')\n",
+        "plt.plot([0, 1], [0, 1], linestyle='--', color='gray')  # diagonal line for random guess\n",
+        "plt.xlabel('False Positive Rate')\n",
+        "plt.ylabel('True Positive Rate')\n",
+        "plt.title('ROC Curve - Stacked Model')\n",
+        "plt.legend(loc='lower right')\n",
+        "plt.grid(True)\n",
+        "plt.show()"
+      ],
+      "metadata": {
+        "id": "o6F1JOCz7maU"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Stacking Logistic Regression + Random Forest\n",
+        "\n",
+        "from sklearn.ensemble import StackingClassifier, RandomForestClassifier\n",
+        "from sklearn.linear_model import LogisticRegression\n",
+        "from sklearn.metrics import roc_auc_score, roc_curve, classification_report\n",
+        "import matplotlib.pyplot as plt\n",
+        "\n",
+        "# Define base learners\n",
+        "estimators = [\n",
+        "    ('lr', LogisticRegression(max_iter=1000, random_state=42, class_weight='balanced')),\n",
+        "    ('rf', RandomForestClassifier(n_estimators=200, random_state=42, class_weight='balanced'))\n",
+        "]\n",
+        "\n",
+        "# Define stacking classifier\n",
+        "stacked_model = StackingClassifier(\n",
+        "    estimators=estimators,\n",
+        "    final_estimator=LogisticRegression(max_iter=1000, random_state=42),\n",
+        "    cv=5,                      # cross-validation for meta-model\n",
+        "    stack_method='predict_proba',  # use probabilities for stacking\n",
+        "    n_jobs=-1\n",
+        ")\n",
+        "\n",
+        "# Fit the stacked model\n",
+        "stacked_model.fit(X_train, y_train)\n",
+        "\n",
+        "# Predict probabilities on test set\n",
+        "y_proba_stack = stacked_model.predict_proba(X_test)[:, 1]\n",
+        "\n",
+        "# Predict class labels with threshold 0.5\n",
+        "y_pred_stack = (y_proba_stack > 0.5).astype(int)\n",
+        "\n",
+        "# Evaluate\n",
+        "roc_auc = roc_auc_score(y_test, y_proba_stack)\n",
+        "print(f\"Stacked Model ROC-AUC: {roc_auc:.4f}\\n\")\n",
+        "print(\"Classification Report:\\n\")\n",
+        "print(classification_report(y_test, y_pred_stack))\n",
+        "\n",
+        "# Plot ROC curve\n",
+        "fpr, tpr, _ = roc_curve(y_test, y_proba_stack)\n",
+        "plt.figure(figsize=(6,6))\n",
+        "plt.plot(fpr, tpr, label=f'Stacked Model (AUC = {roc_auc:.3f})', color='blue')\n",
+        "plt.plot([0,1], [0,1], linestyle='--', color='gray')\n",
+        "plt.xlabel('False Positive Rate')\n",
+        "plt.ylabel('True Positive Rate')\n",
+        "plt.title('ROC Curve - Stacked Model')\n",
+        "plt.legend(loc='lower right')\n",
+        "plt.grid(True)\n",
+        "plt.show()"
+      ],
+      "metadata": {
+        "id": "5GPStNi27nM8"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "**Stacking models**\n",
+        "\n",
+        "Seeing that LogisticRegression and RandomForestClassifier is the highest quality and most trusted models I'll stack them for better model outcome"
+      ],
+      "metadata": {
+        "id": "f4c5Hss_VsXM"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Stacked Model Hyperparameter Tuning\n",
+        "\n",
+        "from sklearn.linear_model import LogisticRegression\n",
+        "from sklearn.model_selection import RandomizedSearchCV\n",
+        "from sklearn.preprocessing import StandardScaler\n",
+        "from sklearn.pipeline import Pipeline\n",
+        "from sklearn.metrics import roc_auc_score, classification_report\n",
+        "import numpy as np\n",
+        "\n",
+        "# Base learners\n",
+        "estimators = [\n",
+        "    ('lr', LogisticRegression(max_iter=1000, class_weight='balanced', random_state=42)),\n",
+        "    ('rf', RandomForestClassifier(class_weight='balanced', random_state=42))\n",
+        "]\n",
+        "\n",
+        "# Stacking classifier\n",
+        "stacked = StackingClassifier(\n",
+        "    estimators=estimators,\n",
+        "    final_estimator=LogisticRegression(max_iter=1000, random_state=42),\n",
+        "    cv=5,\n",
+        "    stack_method='predict_proba',\n",
+        "    n_jobs=-1\n",
+        ")\n",
+        "\n",
+        "# Pipeline: scaling + stacked model\n",
+        "pipeline = Pipeline([\n",
+        "    ('scaler', StandardScaler()),   # scales features for LR\n",
+        "    ('stack', stacked)\n",
+        "])\n",
+        "\n",
+        "# Hyperparameter grid\n",
+        "param_grid = {\n",
+        "    # Logistic Regression (base learner)\n",
+        "    'stack__lr__C': np.logspace(-3, 3, 6),\n",
+        "    'stack__lr__penalty': ['l1', 'l2', 'elasticnet'],\n",
+        "    'stack__lr__l1_ratio': [0, 0.5, 1],  # only used for elasticnet\n",
+        "\n",
+        "    # Random Forest (base learner)\n",
+        "    'stack__rf__n_estimators': [100, 200, 300],\n",
+        "    'stack__rf__max_depth': [None, 5, 10, 20],\n",
+        "    'stack__rf__max_features': ['sqrt', 'log2', None],\n",
+        "\n",
+        "    # Final estimator (Logistic Regression)\n",
+        "    'stack__final_estimator__C': np.logspace(-3, 3, 6),\n",
+        "    'stack__final_estimator__penalty': ['l1', 'l2', 'elasticnet'],\n",
+        "    'stack__final_estimator__l1_ratio': [0, 0.5, 1]\n",
+        "}\n",
+        "\n",
+        "# RandomizedSearchCV\n",
+        "rand_search = RandomizedSearchCV(\n",
+        "    estimator=pipeline,\n",
+        "    param_distributions=param_grid,\n",
+        "    n_iter=30,             # try 30 random combinations\n",
+        "    scoring='roc_auc',     # maximize ROC-AUC\n",
+        "    cv=3,                  # 3-fold CV\n",
+        "    verbose=2,\n",
+        "    n_jobs=-1,\n",
+        "    random_state=42\n",
+        ")\n",
+        "\n",
+        "# Fit the model (on SMOTE-ed X_train if you used SMOTE already)\n",
+        "rand_search.fit(X_train, y_train)\n",
+        "\n",
+        "# Best model\n",
+        "best_model = rand_search.best_estimator_\n",
+        "print(\"Best Parameters:\", rand_search.best_params_)\n",
+        "print(\"CV ROC-AUC:\", rand_search.best_score_)\n",
+        "\n",
+        "# Evaluate on test set\n",
+        "y_proba = best_model.predict_proba(X_test)[:, 1]\n",
+        "y_pred = (y_proba > 0.5).astype(int)\n",
+        "\n",
+        "roc_auc = roc_auc_score(y_test, y_proba)\n",
+        "print(f\"Test ROC-AUC: {roc_auc:.4f}\\n\")\n",
+        "print(\"Classification Report:\\n\")\n",
+        "print(classification_report(y_test, y_pred))"
+      ],
+      "metadata": {
+        "id": "K8wMyFZq7oeN",
+        "collapsed": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from sklearn.metrics import roc_curve, roc_auc_score\n",
+        "import matplotlib.pyplot as plt\n",
+        "\n",
+        "# Predict probabilities for the positive class\n",
+        "y_pred_proba = stacked_model.predict_proba(X_test)[:, 1]"
+      ],
+      "metadata": {
+        "id": "lvCwwBvk7pFk"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "fpr, tpr, thresholds = roc_curve(y_test, y_pred_proba)\n",
+        "roc_auc = roc_auc_score(y_test, y_pred_proba)"
+      ],
+      "metadata": {
+        "id": "WQxNHLw9Iu3A"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "plt.figure()\n",
+        "plt.plot(fpr, tpr, label=f\"Stacked Model (AUC = {roc_auc:.3f})\")\n",
+        "plt.plot([0, 1], [0, 1], linestyle='--')\n",
+        "plt.xlabel(\"False Positive Rate\")\n",
+        "plt.ylabel(\"True Positive Rate\")\n",
+        "plt.title(\"ROC Curve – Stacked Model\")\n",
+        "plt.legend()\n",
+        "plt.show()"
+      ],
+      "metadata": {
+        "id": "Nh0QK8WiIvNi"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import joblib\n",
+        "\n",
+        "joblib.dump(log_model, \"logistic_regression_model.pkl\")"
+      ],
+      "metadata": {
+        "id": "Gxjm3jG07pzG"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "log_model = joblib.load(\"logistic_regression_model.pkl\")"
+      ],
+      "metadata": {
+        "id": "8aX8nxaHKUS7"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "python src/train_logreg.py\n",
+        "python src/evaluate.py"
+      ],
+      "metadata": {
+        "id": "uur5ZTb6LiqY"
+      },
+      "execution_count": null,
+      "outputs": []
+    }
+  ]
+}
